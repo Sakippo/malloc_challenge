@@ -85,7 +85,8 @@ void *my_malloc(size_t size) {
     metadata = metadata->next;
   }
   */
-  my_metadata_t *minimum_free_slot =  NULL;
+
+  my_metadata_t *minimum_free_slot =  NULL; //minimumの空き領域を記録
   my_metadata_t *minimum_prev = NULL;
 
   while (metadata) {
@@ -94,7 +95,7 @@ void *my_malloc(size_t size) {
         minimum_free_slot = metadata;
         minimum_prev = prev;
       }else{
-        if (minimum_free_slot -> size > metadata->size){
+        if (minimum_free_slot -> size > metadata->size){ //空き領域がminimum sizeよりも小さかったらminimumを更新
           minimum_free_slot = metadata;
           minimum_prev = prev;
         }
@@ -103,7 +104,7 @@ void *my_malloc(size_t size) {
     prev = metadata;
     metadata = metadata->next;
   }
-  //printf("b");
+  
   metadata = minimum_free_slot; 
   prev = minimum_prev;
   
