@@ -47,7 +47,7 @@ my_heap_t my_heap;
 void my_add_to_free_list(my_metadata_t *metadata) {
   assert(!metadata->next);
   metadata->next = my_heap.free_head;
-  my_heap.free_head = metadata;
+  my_heap.free_head = metadata;                                               
 }
 
 void my_remove_from_free_list(my_metadata_t *metadata, my_metadata_t *prev) {
@@ -79,10 +79,34 @@ void *my_malloc(size_t size) {
   my_metadata_t *prev = NULL;
   // First-fit: Find the first free slot the object fits.
   // TODO: Update this logic to Best-fit!
+  /*
   while (metadata && metadata->size < size) {
     prev = metadata;
     metadata = metadata->next;
   }
+  */
+  my_metadata_t *minimum_free_slot =  NULL;
+  my_metadata_t *minimum_prev = NULL;
+
+  while (metadata) {
+    if (metadata->size >= size){
+      if (minimum_free_slot == NULL){
+        minimum_free_slot = metadata;
+        minimum_prev = prev;
+      }else{
+        if (minimum_free_slot -> size > metadata->size){
+          minimum_free_slot = metadata;
+          minimum_prev = prev;
+        }
+      }
+    }
+    prev = metadata;
+    metadata = metadata->next;
+  }
+  //printf("b");
+  metadata = minimum_free_slot; 
+  prev = minimum_prev;
+  
   // now, metadata points to the first free slot
   // and prev is the previous entry.
 
@@ -110,6 +134,7 @@ void *my_malloc(size_t size) {
   // ... | metadata | object | ...
   //     ^          ^
   //     metadata   ptr
+
   void *ptr = metadata + 1;
   size_t remaining_size = metadata->size - size;
   metadata->size = size;
